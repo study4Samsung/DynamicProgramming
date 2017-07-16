@@ -1,0 +1,57 @@
+/*Baekjoon algorithm #11053*/
+
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int n;
+vector<int> input(1001); //값이 입력된 배열
+vector<int> LIS;
+vector<int> parent(500001,-1);    // LIS 경로 저장
+
+int main(){
+    
+
+    cin >> n;
+    for(int i=0; i<n; i++){
+        cin >> input[i];        //예를 들어, 4 2 6 7 9 1 3 10 입력했을 경우
+    }
+    
+    LIS.push_back(input[0]);
+    
+    for(int i=1; i<n; ++i){        // i=2일때
+        if(LIS.back() < input[i]){    // 2 (LIS첫번째 요소) < 6
+            parent[input[i]] = LIS.back();    // parent[6] = 2;
+            LIS.push_back(input[i]);    // LIS의 두번째 칸에 6 넣는다
+        }
+        
+        else{    // LIS 배열 내에서 input[i] 값을 배치할 적당한 자리 찾기
+            auto it = lower_bound(LIS.begin(), LIS.end(), input[i]);    //input[i]보다 큰 수가 처음으로 등장하는 LIS 배열칸 주소 반환
+            *it = input[i]; //*(반환된 배열칸 주소)에 input[1]값 대입 // LIS[0] = 2
+            if(it != LIS.begin())    // LIS내에 input[i]값을 넣을 찾은 주소(it)가 첫번째 칸만 아니면,
+                parent[input[i]] = *(--it);    // it 바로 앞 배열칸의 값을 parent[input[i]]에 넣는다.
+                                               // 즉, i=6이며 LIS={1,6,7,9}일때, input[6]은 3이므로 LIS배열에서 {1,3,7,9}로 교체 해야한다
+                                                // parent[input[6]] = *(LIS배열의 '3'을 가리키는 it 주소값--) 
+                                                // 따라서, parent[3] = 1인 셈. 
+        }
+    }
+    
+            
+    int child=LIS.back();
+    
+  //  cout << "LIS.back() = " << child <<endl;
+    int cnt=0;
+    while(child!=-1){
+    // LIS 경로 출력하고 싶을때
+    //    printf("%d\n", child);
+        child=parent[child];
+        cnt++;
+    }  
+    
+    cout << cnt <<endl;
+    return 0;
+    
+    
+}
